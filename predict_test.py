@@ -11,7 +11,7 @@ def main():
      x_test, y_test = data
      print(f"--Load Model {sys.argv[2]}--")
      #Load the model that should be in sys.argv[2]
-     model = None     
+     model = tf.keras.models.load_model(sys.argv[2])    
      pick = input(f"Pick test_image (0 -> {len(x_test)-1}):")
      while pick.isdigit() and int(pick) >= 0 and int(pick) < len(x_test):
         pick = int(pick)
@@ -23,13 +23,12 @@ def main():
      print("Done")
 
 def predict(model, class_names, img, true_label):
-    img = np.array([img])
-    #Replace these two lines with code to make a prediction
-    prediction = [1/10,1/10,1/10,1/10,1/10,1/10,1/10,1/10,1/10,1/10]
-    #Determine what the predicted label is
-    predicted_label = 0
-    plot(class_names, prediction, true_label, predicted_label, img[0])
-    plt.show()
+     img = np.array([img])
+     img = img.reshape(1, 28, 28, 1)   # add channel dimension
+     prediction = model.predict(img, verbose=0)[0]   # get probability array
+     predicted_label = np.argmax(prediction)
+     plot(class_names, prediction, true_label, predicted_label, img[0])
+     plt.show()
 
 def check_args():
      if(len(sys.argv) == 1):
