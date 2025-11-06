@@ -21,15 +21,19 @@ input_shape = (28, 28, 1)
 
 print("--Make model--")
 model = tf.keras.models.Sequential([
-  tf.keras.layers.Flatten(input_shape=(28, 28, 1)),
+  tf.keras.layers.Flatten(input_shape=input_shape),
+  tf.keras.layers.Dense(256, activation='relu'),
   tf.keras.layers.Dense(10, activation='softmax')
 ])
-model.compile(optimizer='sgd', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
 print("--Fit model--")
-model.fit(x_train, y_train, epochs=1, verbose=2)
+model.fit(x_train, y_train, epochs=10, batch_size=64, verbose=2)
 
 print("--Evaluate model--")
 model_loss1, model_acc1 = model.evaluate(x_train,  y_train, verbose=2)
 model_loss2, model_acc2 = model.evaluate(x_test,  y_test, verbose=2)
 print(f"Train / Test Accuracy: {model_acc1*100:.1f}% / {model_acc2*100:.1f}%")
+
+model.save("notMNIST-Partial.keras")
+print("Saved as notMNIST-Partial.keras")
