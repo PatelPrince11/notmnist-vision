@@ -23,6 +23,8 @@ a leaderboard number:
 All numbers in this section were **re-measured from the committed artifacts** during the audit,
 not copied from the report.
 
+**Results (2026-10-07):** Phase 1 is complete. Measured results, key findings and figures are in `README.md`; the full tables are in `reports/results.md` and `reports/error_analysis.md`.
+
 ### 2.1 Repository contents
 
 ```
@@ -298,6 +300,8 @@ p.predict_image(PIL.Image.open("letter.png"), top_k=3)  # [{"label": "C", "prob"
 ## 7. Scope
 
 ### Phase 1: must have (≈9.5 h)
+✅ All Phase 1 items below are done (2026-10-07): see `README.md` and `reports/`.
+
 Repo hygiene & legacy preservation · leak-free data pipeline · PyTorch MLP & CNN reproductions ·
 improved CNN · ResNet-18 linear probe + fine-tune (+ scratch ablation if time) · seeded,
 config-recorded training · evaluation suite with CIs and calibration · legacy Keras models on
@@ -379,11 +383,11 @@ experiment tracking · inference packaging · pytest. Phase 2 adds FastAPI and D
 > - Built and compared an MLP and a CNN for 10-class glyph recognition on notMNIST (70k images); the CNN raised test accuracy from 93.1 % to 95.1 %.
 > - Built a regularised tabular classifier (L2, batch norm, dropout, class weighting, early stopping) predicting NFL draft outcomes from combine data.
 
-**After the one-day expansion (fill X from `reports/results.md`; do not use before measuring):**
+**After the one-day expansion (measured values filled in from `reports/results.md` and `reports/error_analysis.md`; the FastAPI/Docker parts are NOT done yet):**
 > **notMNIST Letter Recognition: from MLP to Transfer Learning** · PyTorch, torchvision, scikit-learn, pytest *(+ FastAPI, Docker)*
 > - Found and removed train/test leakage (5.1 % of test images duplicated in training). Rebuilt evaluation on a de-duplicated, validation-based split with 95 % CIs, McNemar significance tests and calibration (ECE).
-> - Benchmarked 5 architectures on a single pipeline (MLP, CNN, BatchNorm CNN, and ResNet-18 as both a frozen probe and a full fine-tune, plus a from-scratch ablation). Reached X % test accuracy (macro-F1 X) vs. a 92.8 % MLP baseline, with X× fewer parameters than the original CNN.
-> - Error analysis traced X % of remaining errors to confusable pairs (I/J, E/F, G/C) and surfaced likely label noise among high-confidence mistakes.
+> - Benchmarked 5 architectures on a single pipeline (MLP, CNN, BatchNorm CNN, and ResNet-18 as both a frozen probe and a full fine-tune, plus a from-scratch ablation). Reached 96.72 % test_clean accuracy (macro-F1 0.9668) vs. a 92.82 % Keras MLP baseline, using 1.6× fewer parameters than the original CNN (288,618 vs 462,858); pretrained and from-scratch ResNet-18 were not significantly different (McNemar p = 0.5044) and both scored below the CNN.
+> - Error analysis showed the 10 most frequent confusions (led by J→I and I→J, C↔G) account for 125 of 311 remaining errors (40.2 %), and a manual audit of the 25 most-confident errors found 4 likely mislabels and 9 unreadable or decorative glyphs.
 > - Packaged a reproducible inference path (CLI *(and FastAPI service in Docker)*) with pytest coverage of data splits, metrics and preprocessing.
 
-Pick the "fewer parameters" claim only if the measured numbers support it.
+The "fewer parameters" claim is supported: 462,858 / 288,618 = 1.60×. Drop the italicised FastAPI/Docker text until Phase 2 is built.

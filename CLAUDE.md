@@ -24,8 +24,11 @@ uv venv --python 3.12 .venv && uv pip install -e ".[dev]"     # setup
 .venv/bin/python -m notmnist.evaluate runs/cnn_improved_s42
 .venv/bin/python -m notmnist.compare
 .venv/bin/python -m notmnist.error_analysis
+.venv/bin/python -m notmnist.predict IMAGE.png --top-k 3            # uses models/notmnist_cnn_improved.pt
 env/bin/python legacy/evaluate_keras.py                          # legacy TF env only
 ```
+
+On this machine macOS hides the venv `.pth` file, so the editable install is not importable: prefix commands with `PYTHONPATH=src`.
 
 ## Technical principles
 
