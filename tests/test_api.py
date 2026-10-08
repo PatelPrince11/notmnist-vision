@@ -1,4 +1,6 @@
 import io
+import struct
+import zlib
 
 import pytest
 from fastapi.testclient import TestClient
@@ -58,3 +60,12 @@ def test_too_large_413(client):
         "/predict", files={"file": ("a.png", b"0" * (1_048_576 + 1), "image/png")}
     )
     assert r.status_code == 413
+
+
+def test_huge_declared_dimensions_400(client):
+    data = bytearray(_png(__import__("numpy").zeros((4, 4), dtype="uint8")))
+    # patch IHDR width/height (bytes 16..24) and recompute its CRC
+    data[16:24] = struct.pack(">II", 20000, 20000)
+    data[29:33] = struct.pack(">I", zlib.crc32(bytes(data[12:29])))
+    r = client.post("/predict", files={"file": ("a.png", bytes(data), "image/png")})
+    assert r.status_code == 400

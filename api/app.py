@@ -1,6 +1,7 @@
 """FastAPI service: uvicorn api.app:app"""
 import io
 import os
+import struct
 from contextlib import asynccontextmanager
 from pathlib import Path
 
@@ -12,6 +13,7 @@ from notmnist.inference import Predictor
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CHECKPOINT = REPO_ROOT / "models" / "notmnist_cnn_improved.pt"
 MAX_BYTES = 1_048_576
+MAX_PIXELS = 4096 * 4096
 
 
 @asynccontextmanager
@@ -40,8 +42,20 @@ async def predict(
         raise HTTPException(status_code=413, detail="file larger than 1 MB")
     try:
         img = Image.open(io.BytesIO(data))
+        if img.size[0] * img.size[1] > MAX_PIXELS:
+            raise HTTPException(status_code=400, detail="image dimensions too large")
         img.load()
-    except (UnidentifiedImageError, OSError):
-        raise HTTPException(status_code=400, detail="not a valid image")
+    except HTTPException:
+        raise
+    except (
+        UnidentifiedImageError,
+        OSError,
+        ValueError,
+        SyntaxError,
+        EOFError,
+        Image.DecompressionBombError,
+        struct.error,
+    ):
+        raise HTTPException(status_code=400, detail="not a valid image") from None
     predictor = request.app.state.predictor
     return {"model": predictor.model_name, "predictions": predictor.predict_image(img, top_k=top_k)}
