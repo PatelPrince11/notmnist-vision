@@ -64,6 +64,24 @@ $ python -m notmnist.predict test0.png --top-k 3
 
 The CLI prints the JSON indented one field per line; it is condensed above. The original hand-drawn sample `legacy/keras_part1/image.png` gives A (prob 0.9729), F (0.0231), G (0.0033); I did not record which letter was drawn, so I make no accuracy claim for it.
 
+### API
+
+```
+uv pip install -e ".[api]"
+PYTHONPATH=src:. uvicorn api.app:app --port 8000     # checkpoint from $NOTMNIST_CHECKPOINT, default models/notmnist_cnn_improved.pt
+curl -s localhost:8000/health
+curl -s -F file=@test0.png "localhost:8000/predict?top_k=3"
+```
+
+Real responses (test0.png is the same test_clean image as above):
+
+```
+{"status":"ok","model":"cnn_improved"}
+{"model":"cnn_improved","predictions":[{"label":"F","index":5,"prob":0.9999998807907104},{"label":"E","index":4,"prob":3.4881054489233065e-08},{"label":"A","index":0,"prob":2.4776300122653083e-08}]}
+```
+
+Errors: non-image or corrupt upload gives 400, over 1 MB gives 413, `top_k` outside 1-10 gives 422.
+
 ## Project structure
 
 ```
@@ -85,7 +103,7 @@ The project began as a CPSC 433 (Fall 2025) assignment, preserved unchanged in [
 
 - Single seed (42) per run. Multi-seed mean +/- std was not run, so small gaps between neighbouring rows should not be over-read; the McNemar tests only cover test-set sampling noise, not seed variance.
 - Training ran on Apple MPS, where bitwise determinism is not guaranteed. Seeds and configs are saved, but rerunning may give slightly different numbers.
-- Phase 2 items not done: FastAPI service and Docker image. There is no API; the only inference interface is the CLI.
+- Phase 2: the FastAPI service is done; the Docker image is not yet built.
 - Hand-drawn input is out of distribution: the models were trained on rendered fonts only, and no hand-drawn evaluation set was built.
 - The error-analysis audit is manual and subjective.
 - One dataset (notMNIST); nothing here says how the ranking would look on other data.
