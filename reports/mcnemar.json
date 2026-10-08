@@ -1,0 +1,44 @@
+[
+  {
+    "a": "legacy_keras_mlp",
+    "b": "mlp_baseline_s42",
+    "b01": 199,
+    "b10": 163,
+    "p_value": 0.06568446270564082
+  },
+  {
+    "a": "mlp_baseline_s42",
+    "b": "cnn_baseline_s42",
+    "b01": 312,
+    "b10": 177,
+    "p_value": 1.0766213028213982e-09
+  },
+  {
+    "a": "cnn_baseline_s42",
+    "b": "cnn_improved_s42",
+    "b01": 279,
+    "b10": 80,
+    "p_value": 6.138533887702312e-27
+  },
+  {
+    "a": "cnn_improved_s42",
+    "b": "resnet18_finetune_s42",
+    "b01": 94,
+    "b10": 161,
+    "p_value": 3.2479528435460725e-05
+  },
+  {
+    "a": "resnet18_probe_s42",
+    "b": "resnet18_finetune_s42",
+    "b01": 895,
+    "b10": 66,
+    "p_value": 1.4999816176720622e-186
+  },
+  {
+    "a": "resnet18_scratch_s42",
+    "b": "resnet18_finetune_s42",
+    "b01": 168,
+    "b10": 155,
+    "p_value": 0.5043879247567464
+  }
+]

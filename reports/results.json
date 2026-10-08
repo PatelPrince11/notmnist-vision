@@ -1,0 +1,122 @@
+[
+  {
+    "run": "resnet18_probe_s42",
+    "model_name": "resnet18",
+    "n_params": 11181642,
+    "val_acc": 0.8125,
+    "test_clean_acc": 0.8727732686834616,
+    "test_clean_ci95": [
+      0.8659165355169879,
+      0.8793282276028603
+    ],
+    "test_official_acc": 0.8765,
+    "macro_f1": 0.8731106905312478,
+    "nll": 0.4361342541860379,
+    "ece": 0.043330358480311526
+  },
+  {
+    "run": "legacy_keras_mlp",
+    "model_name": "keras_mlp",
+    "n_params": 203530,
+    "val_acc": null,
+    "test_clean_acc": 0.9282175608727733,
+    "test_clean_ci95": [
+      0.922848108133236,
+      0.9332403550858741
+    ],
+    "test_official_acc": 0.931,
+    "macro_f1": 0.9275164981257502,
+    "nll": 0.25192610039872515,
+    "ece": 0.00748560662840194
+  },
+  {
+    "run": "mlp_baseline_s42",
+    "model_name": "mlp_baseline",
+    "n_params": 203530,
+    "val_acc": 0.8739697802197802,
+    "test_clean_acc": 0.9320122272583535,
+    "test_clean_ci95": [
+      0.9267699216450627,
+      0.936904802417343
+    ],
+    "test_official_acc": 0.9346,
+    "macro_f1": 0.9316054873974728,
+    "nll": 0.24141963029712332,
+    "ece": 0.005923077508897244
+  },
+  {
+    "run": "cnn_baseline_s42",
+    "model_name": "cnn_baseline",
+    "n_params": 462858,
+    "val_acc": 0.9026442307692307,
+    "test_clean_acc": 0.9462422262042796,
+    "test_clean_ci95": [
+      0.9415204148380815,
+      0.9506027873866824
+    ],
+    "test_official_acc": 0.9485,
+    "macro_f1": 0.9457741647247099,
+    "nll": 0.2702849849447433,
+    "ece": 0.028681382819691195
+  },
+  {
+    "run": "legacy_keras_cnn",
+    "model_name": "keras_cnn",
+    "n_params": 462858,
+    "val_acc": null,
+    "test_clean_acc": 0.9490882259934648,
+    "test_clean_ci95": [
+      0.9444802322830297,
+      0.9533326655742058
+    ],
+    "test_official_acc": 0.9512,
+    "macro_f1": 0.9485916137275616,
+    "nll": 0.2879644102612118,
+    "ece": 0.03039580218807656
+  },
+  {
+    "run": "resnet18_scratch_s42",
+    "model_name": "resnet18",
+    "n_params": 11181642,
+    "val_acc": 0.9170673076923077,
+    "test_clean_acc": 0.9587857067566143,
+    "test_clean_ci95": [
+      0.9545963546021417,
+      0.9626036542990712
+    ],
+    "test_official_acc": 0.9602,
+    "macro_f1": 0.958255576442659,
+    "nll": 0.1329383597168694,
+    "ece": 0.005063295449107803
+  },
+  {
+    "run": "resnet18_finetune_s42",
+    "model_name": "resnet18",
+    "n_params": 11181642,
+    "val_acc": 0.9215315934065934,
+    "test_clean_acc": 0.9601560029514072,
+    "test_clean_ci95": [
+      0.956030237894123,
+      0.963909254089391
+    ],
+    "test_official_acc": 0.9618,
+    "macro_f1": 0.9598441930220863,
+    "nll": 0.13077236765590122,
+    "ece": 0.0042010638150508295
+  },
+  {
+    "run": "cnn_improved_s42",
+    "model_name": "cnn_improved",
+    "n_params": 288618,
+    "val_acc": 0.9278846153846154,
+    "test_clean_acc": 0.9672182987245704,
+    "test_clean_ci95": [
+      0.9634417320733282,
+      0.97061663425743
+    ],
+    "test_official_acc": 0.9683,
+    "macro_f1": 0.9668420330974309,
+    "nll": 0.10486839845759817,
+    "ece": 0.004688278699080471
+  }
+]
