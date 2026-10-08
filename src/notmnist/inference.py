@@ -9,10 +9,16 @@ from notmnist import CLASS_NAMES
 from notmnist.models import load_checkpoint
 
 
-def preprocess_image(img: Image.Image, invert: bool | None = None) -> torch.Tensor:
+def preprocess_image(img: Image.Image, invert: bool = False) -> torch.Tensor:
     """PIL image -> (1,1,28,28) float32 in [0,1], light glyph on dark background.
 
-    invert=None auto-inverts when the mean intensity is above 0.5 (dark-on-light input).
+    The model expects the training polarity (light glyph on dark background), so by default
+    the pixels are used as-is. Dark-on-light inputs (scans, hand-drawn letters on white)
+    need invert=True. There is no auto-detection: a mean-intensity heuristic inverted many
+    bold, filled notMNIST glyphs and cost ~14 pp of accuracy on test_clean.
+
+    RGBA images are composited onto white, which makes transparent backgrounds light; that
+    is only correct together with invert=True (a dark glyph drawn on a transparent canvas).
     """
     if img.mode == "RGBA":
         bg = Image.new("RGBA", img.size, (255, 255, 255, 255))
@@ -21,8 +27,6 @@ def preprocess_image(img: Image.Image, invert: bool | None = None) -> torch.Tens
     if img.size != (28, 28):
         img = img.resize((28, 28), Image.LANCZOS)
     arr = np.asarray(img, dtype=np.float32) / 255.0
-    if invert is None:
-        invert = bool(arr.mean() > 0.5)
     if invert:
         arr = 1.0 - arr
     return torch.from_numpy(np.ascontiguousarray(arr)).reshape(1, 1, 28, 28)
@@ -45,7 +49,7 @@ class Predictor:
             logits = self.model(x.to(self.device))
             return torch.softmax(logits, dim=1).cpu().numpy()
 
-    def predict_image(self, img: Image.Image, top_k: int = 3, invert: bool | None = None) -> list[dict]:
+    def predict_image(self, img: Image.Image, top_k: int = 3, invert: bool = False) -> list[dict]:
         if not 1 <= top_k <= len(self.class_names):
             raise ValueError(f"top_k must be in [1, {len(self.class_names)}], got {top_k}")
         probs = self.predict_tensor(preprocess_image(img, invert))[0]

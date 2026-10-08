@@ -255,8 +255,12 @@ from notmnist.inference import Predictor
 p = Predictor.from_checkpoint("models/notmnist_cnn_improved.pt")
 p.predict_image(PIL.Image.open("letter.png"), top_k=3)  # [{"label": "C", "prob": 0.97}, ...]
 ```
-`preprocess_image` handles any size, RGB/RGBA/L input, and auto-inverts dark-on-light images
-(mean > 0.5). The CLI is `python -m notmnist.predict letter.png --top-k 3`, which prints JSON.
+`preprocess_image` handles any size and RGB/RGBA/L input. It does not invert by default: input must
+match the training polarity (light glyph on dark background), and dark-on-light images need
+`invert=True` (CLI `--invert`, API `?invert=true`). An earlier mean > 0.5 auto-invert heuristic was
+removed because it inverted 29.87% of test_clean (bold, filled glyphs) and dropped end-to-end
+accuracy to 82.63%; with no inversion the predictor matches `notmnist.evaluate` (96.72%).
+The CLI is `python -m notmnist.predict letter.png --top-k 3`, which prints JSON.
 
 ---
 

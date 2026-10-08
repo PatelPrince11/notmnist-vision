@@ -1,18 +1,22 @@
 import dataclasses
+import io
 import os
 import subprocess
 import sys
 from pathlib import Path
 
+import numpy as np
 import pytest
+import torch
 from PIL import Image
 
 from notmnist.config import PRESETS
 from notmnist.data import make_splits, to_tensor
-from notmnist.inference import Predictor
+from notmnist.inference import Predictor, preprocess_image
 from notmnist.train import train
 
 REPO = Path(__file__).resolve().parents[1]
+SHIPPED = REPO / "models" / "notmnist_cnn_improved.pt"
 
 
 @pytest.fixture(scope="module")
@@ -35,13 +39,39 @@ def test_png_roundtrip_matches_tensor(predictor, splits, tmp_path):
     assert p_img[0]["index"] == int(p_ten.argmax())
 
 
-def test_inverted_rgb_large_image_matches(predictor, splits):
+def test_inverted_rgb_large_image_matches_with_invert(predictor, splits):
     x = splits.x_val[0]
     big = Image.fromarray(255 - x).resize((200, 200)).convert("RGB")
     assert (
-        predictor.predict_image(big, top_k=1)[0]["index"]
-        == predictor.predict_image(Image.fromarray(x), top_k=1)[0]["index"]
+        predictor.predict_image(big, top_k=1, invert=True)[0]["index"]
+        == predictor.predict_image(Image.fromarray(x), top_k=1, invert=False)[0]["index"]
     )
+
+
+def test_default_does_not_invert(splits):
+    x = splits.x_val[0]
+    a = preprocess_image(Image.fromarray(x))
+    b = preprocess_image(Image.fromarray(255 - x), invert=True)
+    assert torch.allclose(a, b, atol=1e-6)
+    assert torch.allclose(a, to_tensor(x[None]), atol=1e-6)
+
+
+@pytest.mark.skipif(not SHIPPED.is_file(), reason="shipped checkpoint not present")
+def test_shipped_predictor_agrees_with_evaluate_path(splits):
+    from notmnist.evaluate import predict_probs
+
+    x = splits.x_test[splits.test_clean_mask][:200]
+    pred = Predictor.from_checkpoint(SHIPPED)
+    ref = predict_probs(pred.model, x, "cpu").argmax(axis=1)
+    got = []
+    for img in x:
+        buf = io.BytesIO()
+        pil = Image.fromarray(img)
+        assert pil.mode == "L"
+        pil.save(buf, format="PNG")
+        buf.seek(0)
+        got.append(pred.predict_image(Image.open(buf), top_k=1)[0]["index"])
+    assert (np.asarray(got) == ref).all()
 
 
 def test_predict_is_deterministic(predictor, splits):

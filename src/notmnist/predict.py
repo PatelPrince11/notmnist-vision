@@ -1,4 +1,4 @@
-"""CLI: python -m notmnist.predict IMAGE [--checkpoint PATH] [--top-k 3] [--invert | --no-invert]"""
+"""CLI: python -m notmnist.predict IMAGE [--checkpoint PATH] [--top-k 3] [--invert]"""
 import argparse
 import json
 import sys
@@ -16,8 +16,9 @@ def main(argv=None) -> int:
     p.add_argument("image", type=Path)
     p.add_argument("--checkpoint", type=Path, default=DEFAULT_CHECKPOINT)
     p.add_argument("--top-k", type=int, default=3)
-    p.add_argument("--invert", action=argparse.BooleanOptionalAction, default=None,
-                   help="force/forbid inversion (default: auto-detect)")
+    p.add_argument("--invert", action="store_true",
+                   help="invert pixels for dark-on-light images (default: off; the model "
+                        "expects a light glyph on a dark background)")
     args = p.parse_args(argv)
 
     if not args.checkpoint.is_file():

@@ -36,6 +36,7 @@ async def predict(
     request: Request,
     file: UploadFile = File(...),
     top_k: int = Query(3, ge=1, le=10),
+    invert: bool = Query(False, description="invert pixels for dark-on-light images"),
 ):
     data = await file.read(MAX_BYTES + 1)
     if len(data) > MAX_BYTES:
@@ -58,4 +59,5 @@ async def predict(
     ):
         raise HTTPException(status_code=400, detail="not a valid image") from None
     predictor = request.app.state.predictor
-    return {"model": predictor.model_name, "predictions": predictor.predict_image(img, top_k=top_k)}
+    preds = predictor.predict_image(img, top_k=top_k, invert=invert)
+    return {"model": predictor.model_name, "predictions": preds}

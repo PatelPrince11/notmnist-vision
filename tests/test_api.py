@@ -69,3 +69,16 @@ def test_huge_declared_dimensions_400(client):
     data[29:33] = struct.pack(">I", zlib.crc32(bytes(data[12:29])))
     r = client.post("/predict", files={"file": ("a.png", bytes(data), "image/png")})
     assert r.status_code == 400
+
+
+def test_predict_invert_true_on_dark_on_light_rgb(client):
+    s = make_splits(seed=42)
+    x, y = s.x_test[0], int(s.y_test[0])
+    big = Image.fromarray(255 - x).resize((200, 200)).convert("RGB")
+    buf = io.BytesIO()
+    big.save(buf, format="PNG")
+    r = client.post(
+        "/predict?invert=true&top_k=1", files={"file": ("a.png", buf.getvalue(), "image/png")}
+    )
+    assert r.status_code == 200
+    assert r.json()["predictions"][0]["label"] == CLASS_NAMES[y]

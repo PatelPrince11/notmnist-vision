@@ -62,15 +62,32 @@ $ python -m notmnist.predict test0.png --top-k 3
 }
 ```
 
-The CLI prints the JSON indented one field per line; it is condensed above. The original hand-drawn sample `legacy/keras_part1/image.png` gives A (prob 0.9729), F (0.0231), G (0.0033); I did not record which letter was drawn, so I make no accuracy claim for it.
+The CLI prints the JSON indented one field per line; it is condensed above. Input must match the training polarity (light glyph on dark background); nothing is inverted unless you pass `--invert`. On all 9,487 test_clean images saved as PNGs and fed through the predictor, top-1 accuracy is 96.72% (9,487/9,487 predictions identical to `notmnist.evaluate`).
+
+The original hand-drawn sample `legacy/keras_part1/image.png` is dark ink on white, so it needs `--invert`:
+
+```
+$ python -m notmnist.predict legacy/keras_part1/image.png --top-k 3 --invert
+{
+  "model": "cnn_improved",
+  "predictions": [
+    { "label": "A", "index": 0, "prob": 0.9729183316230774 },
+    { "label": "F", "index": 5, "prob": 0.02308090217411518 },
+    { "label": "G", "index": 6, "prob": 0.00327720632776618 }
+  ]
+}
+```
+
+I did not record which letter was drawn, so I make no accuracy claim for it.
 
 ### API
 
 ```
-uv pip install -e ".[api]"
+pip install -e ".[dev,api]"
 PYTHONPATH=src:. uvicorn api.app:app --port 8000     # checkpoint from $NOTMNIST_CHECKPOINT, default models/notmnist_cnn_improved.pt
 curl -s localhost:8000/health
 curl -s -F file=@test0.png "localhost:8000/predict?top_k=3"
+curl -s -F file=@legacy/keras_part1/image.png "localhost:8000/predict?top_k=3&invert=true"
 ```
 
 Real responses (test0.png is the same test_clean image as above):
@@ -78,9 +95,10 @@ Real responses (test0.png is the same test_clean image as above):
 ```
 {"status":"ok","model":"cnn_improved"}
 {"model":"cnn_improved","predictions":[{"label":"F","index":5,"prob":0.9999998807907104},{"label":"E","index":4,"prob":3.4881054489233065e-08},{"label":"A","index":0,"prob":2.4776300122653083e-08}]}
+{"model":"cnn_improved","predictions":[{"label":"A","index":0,"prob":0.9729183316230774},{"label":"F","index":5,"prob":0.02308090217411518},{"label":"G","index":6,"prob":0.00327720632776618}]}
 ```
 
-Errors: non-image or corrupt upload gives 400, over 1 MB gives 413, `top_k` outside 1-10 gives 422.
+`invert` defaults to `false` (training polarity); pass `invert=true` for dark-on-light images. Errors: non-image or corrupt upload gives 400, over 1 MB gives 413, `top_k` outside 1-10 gives 422.
 
 ### Docker
 
@@ -98,7 +116,7 @@ Observed (arm64, CPU-only torch 2.14.1+cpu, runs as non-root `appuser`; `test0.p
 {"model":"cnn_improved","predictions":[{"label":"F","index":5,"prob":0.9999998807907104},{"label":"E","index":4,"prob":3.4881054489233065e-08},{"label":"A","index":0,"prob":2.4776300122653083e-08}]}
 ```
 
-Image size: 1.77 GB on disk (372 MB compressed content) per `docker images`.
+Image size: 1.77 GB on disk (372 MB compressed content) per `docker images`. This output was recorded with the image built before the `invert` parameter replaced auto-inversion; the test0.png response is identical to the current code's (shown above), but rebuild the image to get the `invert` query parameter.
 
 ## Project structure
 
@@ -122,6 +140,7 @@ The project began as a CPSC 433 (Fall 2025) assignment, preserved unchanged in [
 - Single seed (42) per run. Multi-seed mean +/- std was not run, so small gaps between neighbouring rows should not be over-read; the McNemar tests only cover test-set sampling noise, not seed variance.
 - Training ran on Apple MPS, where bitwise determinism is not guaranteed. Seeds and configs are saved, but rerunning may give slightly different numbers.
 - Phase 2: the FastAPI service and its Docker image are done. The image is CPU-only and tested on arm64 (Apple Silicon) only.
+- Inputs must match the training polarity (light glyph on dark background). Pass `--invert` (CLI) or `invert=true` (API) for dark-on-light images; there is no auto-detection. A mean-brightness heuristic was tried and dropped: it inverted 29.87% of test_clean images (bold, filled glyphs) and cut accuracy to 82.63%.
 - Hand-drawn input is out of distribution: the models were trained on rendered fonts only, and no hand-drawn evaluation set was built.
 - The error-analysis audit is manual and subjective.
 - One dataset (notMNIST); nothing here says how the ranking would look on other data.
