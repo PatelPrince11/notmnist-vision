@@ -55,3 +55,10 @@ def test_frozen_backbone_bn_unchanged(tmp_path):
     for k in bk:  # weights (frozen) and BN buffers (eval mode) must be untouched
         assert torch.equal(before[k], after[k]), k
     assert not torch.equal(before["head.weight"], after["head.weight"])
+
+
+def test_checkpoint_state_dict_is_cpu(tmp_path):
+    cfg = replace(PRESETS["cnn_improved"], epochs=1, subset=128)
+    ckpt = train(cfg, tmp_path, device=CPU)
+    sd = torch.load(ckpt, weights_only=True)["state_dict"]
+    assert all(v.device.type == "cpu" for v in sd.values())

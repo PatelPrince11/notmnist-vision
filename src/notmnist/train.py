@@ -137,7 +137,7 @@ def train(cfg: TrainConfig, out_dir: Path, device: torch.device | None = None) -
                 if cfg.early_stopping_patience is None or improved:
                     torch.save({
                         "model_name": cfg.model_name,
-                        "state_dict": model.state_dict(),
+                        "state_dict": {k: v.detach().cpu() for k, v in model.state_dict().items()},
                         "config": asdict(cfg),
                         "class_names": list(CLASS_NAMES),
                         "epoch": epoch,
@@ -146,6 +146,8 @@ def train(cfg: TrainConfig, out_dir: Path, device: torch.device | None = None) -
                 if cfg.early_stopping_patience is not None and bad_epochs >= cfg.early_stopping_patience:
                     print(f"[{cfg.preset}] early stop at epoch {epoch} (best val loss {best_loss:.4f})")
                     return best_path
+    if not best_path.exists():
+        raise RuntimeError(f"training produced no checkpoint ({best_path}); val loss never improved (NaN?)")
     return best_path
 
 
