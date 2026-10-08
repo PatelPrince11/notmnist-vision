@@ -273,7 +273,7 @@ The CLI is `python -m notmnist.predict letter.png --top-k 3`, which prints JSON.
 ## 6. Target project structure
 
 ```
-433A1/
+notmnist-vision/
 ├── README.md                  results table, quickstart, figures
 ├── PROJECT_GUIDE.md           this file
 ├── CLAUDE.md                  rules for AI-assisted development
