@@ -46,7 +46,11 @@ up to 100 epochs, balanced class weights, EarlyStopping on val accuracy.
 
 ## Attribution
 
-`predict.py`, `predict_test.py`, `interactive.py`, `grabimage.py` and the starter training script
-come from the CPSC 433 course template (Original Author: Jonathan Hudson, CPSC 433 F24) and retain
-that header. The model designs and training configs, `find_misclassified.py`,
-`compare_partial_complete.py`, all of Part 2, and the written analysis are the student's own work.
+- `predict.py`, `predict_test.py`, `interactive.py` and `grabimage.py` are the CPSC 433 course
+  template by Jonathan Hudson and keep his header (`Original Author: Jonathan Hudson`, `CPSC 433 F24`).
+- `notMNIST-Partial.py` and `notMNIST-Complete.py` are student-modified versions of his starter
+  training script. Their header names Prince Patel and, directly below, credits the origin:
+  "Based on the CPSC 433 F24 starter script by Jonathan Hudson; architecture and training
+  configuration by Prince Patel." (This line, added 2026-10-07, is the only edit to the legacy code.)
+- `find_misclassified.py`, `compare_partial_complete.py`, all of Part 2, and the written analysis
+  are the student's own work.

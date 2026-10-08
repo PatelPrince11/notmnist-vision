@@ -1,5 +1,6 @@
 # notMNIST-Complete.py
 # Original Author: Prince Patel
+# Based on the CPSC 433 F24 starter script by Jonathan Hudson; architecture and training configuration by Prince Patel.
 # Semister: Fall 2025
 # CPSC 433 L01 - T05
 

@@ -133,7 +133,7 @@ PROJECT_GUIDE.md  audit, design and scope
 
 ## Origins
 
-The project began as a CPSC 433 (Fall 2025) assignment, preserved unchanged in [`legacy/`](legacy/README.md). Course-template scripts in `legacy/keras_part1/` were written by Jonathan Hudson and keep that attribution. The legacy Keras models are evaluated here on the same leak-free split so the PyTorch ports have a like-for-like reference.
+The project began as a CPSC 433 (Fall 2025) assignment, preserved unchanged in [`legacy/`](legacy/README.md). In `legacy/keras_part1/`, four scripts (`predict.py`, `predict_test.py`, `interactive.py`, `grabimage.py`) are Jonathan Hudson's CPSC 433 F24 course template and keep his header; the two training scripts (`notMNIST-Partial.py`, `notMNIST-Complete.py`) are student-modified versions of his starter script, credited as "based on the CPSC 433 F24 starter script by Jonathan Hudson; architecture and training configuration by Prince Patel". The legacy Keras models are evaluated here on the same leak-free split so the PyTorch ports have a like-for-like reference.
 
 ## Limitations
 
