@@ -387,7 +387,7 @@ experiment tracking · inference packaging · pytest. Phase 2 adds FastAPI and D
 > **notMNIST Letter Recognition: from MLP to Transfer Learning** · PyTorch, torchvision, scikit-learn, pytest *(+ FastAPI, Docker)*
 > - Found and removed train/test leakage (5.1 % of test images duplicated in training). Rebuilt evaluation on a de-duplicated, validation-based split with 95 % CIs, McNemar significance tests and calibration (ECE).
 > - Benchmarked 5 architectures on a single pipeline (MLP, CNN, BatchNorm CNN, and ResNet-18 as both a frozen probe and a full fine-tune, plus a from-scratch ablation). Reached 96.72 % test_clean accuracy (macro-F1 0.9668) vs. a 92.82 % Keras MLP baseline, using 1.6× fewer parameters than the original CNN (288,618 vs 462,858); pretrained and from-scratch ResNet-18 were not significantly different (McNemar p = 0.5044) and both scored below the CNN.
-> - Error analysis showed the 10 most frequent confusions (led by J→I and I→J, C↔G) account for 125 of 311 remaining errors (40.2 %), and a manual audit of the 25 most-confident errors found 4 likely mislabels and 9 unreadable or decorative glyphs.
+> - Error analysis showed the 10 most frequent confusions (led by J→I with 29 errors, then H→A with 15) account for 125 of 311 remaining errors (40.2 %), and a manual audit of the 25 most-confident errors found 4 likely mislabels and 9 unreadable or decorative glyphs.
 > - Packaged a reproducible inference path (CLI *(and FastAPI service in Docker)*) with pytest coverage of data splits, metrics and preprocessing.
 
 The "fewer parameters" claim is supported: 462,858 / 288,618 = 1.60×. Drop the italicised FastAPI/Docker text until Phase 2 is built.
