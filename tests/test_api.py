@@ -3,12 +3,17 @@ import struct
 import zlib
 
 import pytest
-from fastapi.testclient import TestClient
 from PIL import Image
 
-from api.app import app
 from notmnist import CLASS_NAMES
 from notmnist.data import make_splits
+
+# The API is an optional extra; skip (rather than abort collection) without it.
+_reason = "API extras not installed: pip install -e '.[dev,api]'"
+pytest.importorskip("fastapi", reason=_reason)
+TestClient = pytest.importorskip("fastapi.testclient", reason=_reason).TestClient
+
+from api.app import app  # noqa: E402
 
 
 @pytest.fixture(scope="module")

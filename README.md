@@ -34,7 +34,7 @@ Produced by `python -m notmnist.evaluate runs/<run>` for each run, then `python 
 
 ```bash
 python -m venv .venv && source .venv/bin/activate
-pip install -e ".[dev]"                 # PyTorch, torchvision, scikit-learn, pytest, ...
+pip install -e ".[dev,api]"             # PyTorch, torchvision, scikit-learn, pytest, FastAPI, ...
 pytest -q
 
 python -m notmnist.train --preset cnn_improved --seed 42     # writes runs/cnn_improved_s42/

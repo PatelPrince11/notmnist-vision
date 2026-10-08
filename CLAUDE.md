@@ -18,7 +18,7 @@ Keras MLP 93.10 % / CNN 95.12 % on the official 10k test set, and 92.82 % / 94.9
 ## Commands
 
 ```bash
-uv venv --python 3.12 .venv && uv pip install -e ".[dev]"     # setup
+uv venv --python 3.12 .venv && uv pip install -e ".[dev,api]" # setup
 .venv/bin/pytest -q                                             # tests
 .venv/bin/python -m notmnist.train --preset cnn_improved --seed 42
 .venv/bin/python -m notmnist.evaluate runs/cnn_improved_s42
