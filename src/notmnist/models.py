@@ -91,3 +91,11 @@ def build_model(name: str, pretrained: bool = False) -> nn.Module:
 
 def count_params(model: nn.Module) -> int:
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
+
+
+def load_checkpoint(path, device="cpu") -> tuple[nn.Module, dict]:
+    """Rebuild a model from a training checkpoint; returns (eval-mode model on device, checkpoint dict)."""
+    ckpt = torch.load(path, map_location=device, weights_only=True)
+    model = build_model(ckpt["model_name"], pretrained=False)
+    model.load_state_dict(ckpt["state_dict"])
+    return model.to(device).eval(), ckpt
