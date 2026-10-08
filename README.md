@@ -82,6 +82,24 @@ Real responses (test0.png is the same test_clean image as above):
 
 Errors: non-image or corrupt upload gives 400, over 1 MB gives 413, `top_k` outside 1-10 gives 422.
 
+### Docker
+
+```bash
+docker build -t notmnist-api .
+docker run -d --rm -p 8000:8000 --name notmnist-api-test notmnist-api
+curl -s localhost:8000/health
+curl -s -F file=@test0.png localhost:8000/predict
+```
+
+Observed (arm64, CPU-only torch 2.14.1+cpu, runs as non-root `appuser`; `test0.png` is official test index 0, true label F):
+
+```
+{"status":"ok","model":"cnn_improved"}
+{"model":"cnn_improved","predictions":[{"label":"F","index":5,"prob":0.9999998807907104},{"label":"E","index":4,"prob":3.4881054489233065e-08},{"label":"A","index":0,"prob":2.4776300122653083e-08}]}
+```
+
+Image size: 1.77 GB on disk (372 MB compressed content) per `docker images`.
+
 ## Project structure
 
 ```
@@ -103,7 +121,7 @@ The project began as a CPSC 433 (Fall 2025) assignment, preserved unchanged in [
 
 - Single seed (42) per run. Multi-seed mean +/- std was not run, so small gaps between neighbouring rows should not be over-read; the McNemar tests only cover test-set sampling noise, not seed variance.
 - Training ran on Apple MPS, where bitwise determinism is not guaranteed. Seeds and configs are saved, but rerunning may give slightly different numbers.
-- Phase 2: the FastAPI service is done; the Docker image is not yet built.
+- Phase 2: the FastAPI service and its Docker image are done. The image is CPU-only and tested on arm64 (Apple Silicon) only.
 - Hand-drawn input is out of distribution: the models were trained on rendered fonts only, and no hand-drawn evaluation set was built.
 - The error-analysis audit is manual and subjective.
 - One dataset (notMNIST); nothing here says how the ranking would look on other data.

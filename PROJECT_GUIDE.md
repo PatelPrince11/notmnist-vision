@@ -150,7 +150,7 @@ Your own work: both model designs and their training configs, `find_misclassifie
 | GPU training | NOT IMPLEMENTED | TF on macOS, no Metal plugin → CPU | Add (Apple MPS / CUDA auto-detect) |
 | Inference | IMPLEMENTED (template) | `predict.py`, `interactive.py` (Tk) | Reusable `Predictor` + CLI |
 | Model serving / API | NOT IMPLEMENTED | — | Phase 2: FastAPI |
-| Docker | NOT IMPLEMENTED | — | Phase 2 (optional) |
+| Docker | IMPLEMENTED | `Dockerfile`, `.dockerignore` | CPU-only image serving the FastAPI app |
 | Experiment tracking | NOT IMPLEMENTED | commit messages only | Lightweight run dirs (config + metrics JSON); MLflow/W&B = future |
 | Testing | NOT IMPLEMENTED | — | pytest for data, models, metrics, inference |
 | Reproducibility | PARTIALLY IMPLEMENTED | TF seed set; no deps pinned; artifacts drift from report | Pinned deps, seeded splits, recorded configs |
@@ -383,7 +383,7 @@ experiment tracking · inference packaging · pytest. Phase 2 adds FastAPI and D
 > - Built and compared an MLP and a CNN for 10-class glyph recognition on notMNIST (70k images); the CNN raised test accuracy from 93.1 % to 95.1 %.
 > - Built a regularised tabular classifier (L2, batch norm, dropout, class weighting, early stopping) predicting NFL draft outcomes from combine data.
 
-**After the one-day expansion (measured values filled in from `reports/results.md` and `reports/error_analysis.md`; the FastAPI part is done, Docker is NOT done yet):**
+**After the one-day expansion (measured values filled in from `reports/results.md` and `reports/error_analysis.md`; the FastAPI and Docker parts are done):**
 > **notMNIST Letter Recognition: from MLP to Transfer Learning** · PyTorch, torchvision, scikit-learn, pytest *(+ FastAPI, Docker)*
 > - Found and removed train/test leakage (5.1 % of test images duplicated in training). Rebuilt evaluation on a de-duplicated, validation-based split with 95 % CIs, McNemar significance tests and calibration (ECE).
 > - Benchmarked 5 architectures on a single pipeline (MLP, CNN, BatchNorm CNN, and ResNet-18 as both a frozen probe and a full fine-tune, plus a from-scratch ablation). Reached 96.72 % test_clean accuracy (macro-F1 0.9668) vs. a 92.82 % Keras MLP baseline, using 1.6× fewer parameters than the original CNN (288,618 vs 462,858); pretrained and from-scratch ResNet-18 were not significantly different (McNemar p = 0.5044) and both scored below the CNN.

@@ -1,0 +1,13 @@
+env/
+.venv/
+runs/
+data/
+legacy/
+.git/
+.superpowers/
+reports/
+docs/
+tests/
+__pycache__/
+*.pyc
+.DS_Store
