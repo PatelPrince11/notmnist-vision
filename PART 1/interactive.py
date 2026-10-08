@@ -17,7 +17,7 @@ def main():
 
 def predict(model, class_names, img, true_label):
     img = np.array([img])
-    img = img.reshape(1, 28, 28, 1)   # add channel dimension
+    img = img.reshape(1, 28, 28, 1)
     prediction = model.predict(img, verbose=0)[0]   # get probability array
     predicted_label = np.argmax(prediction)
     plot(class_names, prediction, true_label, predicted_label, img[0])

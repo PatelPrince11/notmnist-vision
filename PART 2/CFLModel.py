@@ -1,3 +1,8 @@
+# CFLModel.py
+# Original Author: Prince Patel
+# Semister: Fall 2025
+# CPSC 433 L01 - T05
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
@@ -44,7 +49,7 @@ X_test = X_test.astype("float32")
 y_train = y_train.values.astype("float32")
 y_test = y_test.values.astype("float32")
 
-# Compute class weights to handle imbalance
+
 weights = class_weight.compute_class_weight(
     class_weight='balanced',
     classes=np.array([0, 1]),
@@ -53,7 +58,7 @@ weights = class_weight.compute_class_weight(
 class_weights = {0: weights[0], 1: weights[1]}
 print("Class weights:", class_weights)
 
-# Build improved model
+# Build model
 model = tf.keras.Sequential([
     tf.keras.layers.Dense(256, activation='relu', kernel_regularizer=regularizers.l2(0.01), input_shape=(X_train.shape[1],)),
     BatchNormalization(),
@@ -64,7 +69,7 @@ model = tf.keras.Sequential([
     tf.keras.layers.Dense(1, activation='sigmoid')
 ])
 
-# Compile with lower learning rate
+# Compile
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.0005)
 model.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
 
