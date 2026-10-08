@@ -2,12 +2,13 @@ import csv
 import json
 from dataclasses import replace
 
+import pytest
 import torch
 
 from notmnist import CLASS_NAMES
 from notmnist.config import PRESETS
 from notmnist.models import build_model, load_checkpoint
-from notmnist.train import train
+from notmnist.train import main, train
 from notmnist.utils import seed_everything
 
 CPU = torch.device("cpu")
@@ -62,3 +63,11 @@ def test_checkpoint_state_dict_is_cpu(tmp_path):
     ckpt = train(cfg, tmp_path, device=CPU)
     sd = torch.load(ckpt, weights_only=True)["state_dict"]
     assert all(v.device.type == "cpu" for v in sd.values())
+
+
+@pytest.mark.parametrize("bad", ["0", "-5"])
+def test_cli_rejects_non_positive_subset(bad, capsys):
+    with pytest.raises(SystemExit) as e:
+        main(["--preset", "mlp_baseline", "--subset", bad])
+    assert e.value.code == 2
+    assert "positive integer" in capsys.readouterr().err

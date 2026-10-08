@@ -1,6 +1,6 @@
 # notMNIST letter recognition: from MLP to transfer learning
 
-A PyTorch project on notMNIST (28x28 font-rendered letters A-J). It started as a CPSC 433 Keras assignment and was rebuilt as a small computer-vision study: a leak-free data split, a ladder of models (MLP, CNN, improved CNN, ResNet-18 as frozen probe, fine-tune and from-scratch), evaluation with confidence intervals, McNemar tests and calibration, an error analysis, and a command-line predictor.
+A PyTorch project on notMNIST (28x28 font-rendered letters A-J). It started as a CPSC 433 Keras assignment and was rebuilt as a small computer-vision study: a leak-free data split, a ladder of models (4 architectures in 6 configurations: MLP, CNN, improved CNN, ResNet-18 as frozen probe, fine-tune and from-scratch), evaluation with confidence intervals, McNemar tests and calibration, an error analysis, and a command-line predictor.
 
 ## Results
 
@@ -18,6 +18,8 @@ Primary metric: accuracy on **test_clean** (n = 9,487), the official test images
 | cnn_improved_s42 | 288,618 | 96.72% [96.34-97.06] | 0.9668 | 0.0047 |
 
 Produced by `python -m notmnist.evaluate runs/<run>` for each run, then `python -m notmnist.compare`. The full table (validation accuracy, test_official, NLL) and the McNemar ladder are in [`reports/results.md`](reports/results.md). The `legacy_keras_*` rows are the original submitted Keras models, scored on the same split.
+
+Validation accuracy is 3.9 to 6.0 percentage points below test_clean accuracy for every PyTorch run (e.g. cnn_improved 92.79% val vs 96.72% test_clean; mlp_baseline 87.40% vs 93.20%). I have not established why. One hypothesis is that the training data, from which validation is split, is noisier than the official test set; the 34 conflicting-label duplicate groups in train and the 4 likely mislabels in the error audit are weak evidence for label noise, not proof.
 
 <p align="center"><img src="reports/figures/confusion_cnn_improved_s42.png" width="48%" alt="Confusion matrix of cnn_improved_s42 on test_clean"> <img src="reports/figures/confident_errors_cnn_improved_s42.png" width="48%" alt="The most confident errors of cnn_improved_s42"></p>
 <p align="center"><img src="reports/figures/confidence_hist_cnn_improved_s42.png" width="60%" alt="Confidence histogram for correct and wrong predictions"></p>
@@ -46,7 +48,7 @@ python -m notmnist.predict path/to/letter.png --top-k 3      # uses models/notmn
 
 If `import notmnist` fails after the editable install (seen on macOS when the venv's `.pth` file gets the hidden flag), prefix the commands with `PYTHONPATH=src`.
 
-Presets: `mlp_baseline`, `cnn_baseline`, `cnn_improved`, `resnet18_probe`, `resnet18_finetune`, `resnet18_scratch`. `runs/` is gitignored; `models/notmnist_cnn_improved.pt` (1.2 MB, the `cnn_improved_s42` checkpoint) is the one committed checkpoint.
+Presets: `mlp_baseline`, `cnn_baseline`, `cnn_improved`, `resnet18_probe`, `resnet18_finetune`, `resnet18_scratch`. `runs/` is gitignored; `models/notmnist_cnn_improved.pt` (1.2 MB, the `cnn_improved_s42` checkpoint) is the one committed checkpoint. It is the run with the highest validation accuracy (92.79%, per `reports/results.md`), and it is also best on test_clean, so the choice does not depend on the test set.
 
 Example: a test_clean image (official test index 0, true label F) saved as a PNG:
 

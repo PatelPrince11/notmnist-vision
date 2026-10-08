@@ -151,15 +151,22 @@ def train(cfg: TrainConfig, out_dir: Path, device: torch.device | None = None) -
     return best_path
 
 
+def _positive_int(value: str) -> int:
+    n = int(value)
+    if n <= 0:
+        raise argparse.ArgumentTypeError(f"must be a positive integer, got {value}")
+    return n
+
+
 def main(argv: list[str] | None = None) -> None:
     p = argparse.ArgumentParser(description="Train a notMNIST preset.")
     p.add_argument("--preset", required=True, choices=sorted(PRESETS))
     p.add_argument("--seed", type=int, default=42)
-    p.add_argument("--subset", type=int, default=None)
+    p.add_argument("--subset", type=_positive_int, default=None)
     p.add_argument("--device", choices=["cpu", "mps", "cuda"], default=None)
     a = p.parse_args(argv)
     cfg = replace(PRESETS[a.preset], seed=a.seed, subset=a.subset)
-    name = f"{a.preset}_s{a.seed}" + (f"_sub{a.subset}" if a.subset else "")
+    name = f"{a.preset}_s{a.seed}" + (f"_sub{a.subset}" if a.subset is not None else "")
     best = train(cfg, REPO_ROOT / "runs" / name, device=get_device(a.device))
     print(f"best checkpoint: {best}")
 

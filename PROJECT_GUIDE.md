@@ -49,8 +49,8 @@ not copied from the report.
 ```
 
 There is no README, requirements file, `.gitignore`, test suite, config system or notebook.
-`.DS_Store` files are tracked. The working tree has uncommitted edits (header comments and a
-retrained `notMNIST-Complete.keras`).
+`.DS_Store` files are tracked. At audit time the working tree had uncommitted edits (header comments and a
+retrained `notMNIST-Complete.keras`); the header question is resolved in §2.6.
 
 ### 2.2 Dataset (Part 1)
 
@@ -115,9 +115,15 @@ report says the opposite ("much better at generalizing").
 The first commit (`f33c062`) shows these files came from the course template (header: *Original Author:
 Jonathan Hudson, CPSC 433 F24*): `predict.py`, `predict_test.py`, `interactive.py`,
 `grabimage.py`, and a starter training script (a 1-layer softmax model trained with SGD for 1 epoch).
-The **uncommitted** working-tree edits replace that header with the student's name and UCID.
-**Restore the original attribution before publishing.** Code you didn't write must not be presented as yours in a portfolio.
-Also remove the student ID from public files.
+
+Current state (resolved 2026-10-07):
+- The four template scripts keep Hudson's original header.
+- `notMNIST-Partial.py` and `notMNIST-Complete.py` are student-modified versions of the starter script.
+  Their header names the student and, directly below the author line, says: *"Based on the CPSC 433 F24
+  starter script by Jonathan Hudson; architecture and training configuration by Prince Patel."* This
+  line is the only edit made to `legacy/` code.
+- No student ID appears in the public files.
+- `legacy/README.md` and the README "Origins" section describe the same split.
 
 Your own work: both model designs and their training configs, `find_misclassified.py`,
 `compare_partial_complete.py`, all of Part 2, and the written analysis.
@@ -388,10 +394,10 @@ experiment tracking · inference packaging · pytest. Phase 2 adds FastAPI and D
 > - Built a regularised tabular classifier (L2, batch norm, dropout, class weighting, early stopping) predicting NFL draft outcomes from combine data.
 
 **After the one-day expansion (measured values filled in from `reports/results.md` and `reports/error_analysis.md`; the FastAPI and Docker parts are done):**
-> **notMNIST Letter Recognition: from MLP to Transfer Learning** · PyTorch, torchvision, scikit-learn, pytest *(+ FastAPI, Docker)*
+> **notMNIST Letter Recognition: from MLP to Transfer Learning** · PyTorch, torchvision, scikit-learn, pytest, FastAPI, Docker
 > - Found and removed train/test leakage (5.1 % of test images duplicated in training). Rebuilt evaluation on a de-duplicated, validation-based split with 95 % CIs, McNemar significance tests and calibration (ECE).
-> - Benchmarked 5 architectures on a single pipeline (MLP, CNN, BatchNorm CNN, and ResNet-18 as both a frozen probe and a full fine-tune, plus a from-scratch ablation). Reached 96.72 % test_clean accuracy (macro-F1 0.9668) vs. a 92.82 % Keras MLP baseline, using 1.6× fewer parameters than the original CNN (288,618 vs 462,858); pretrained and from-scratch ResNet-18 were not significantly different (McNemar p = 0.5044) and both scored below the CNN.
+> - Benchmarked 4 architectures in 6 training configurations on a single pipeline (MLP, CNN, BatchNorm CNN, and ResNet-18 as a frozen probe, a full fine-tune and a from-scratch ablation). Reached 96.72 % test_clean accuracy (macro-F1 0.9668) vs. a 92.82 % Keras MLP baseline, using 1.6× fewer parameters than the original CNN (288,618 vs 462,858); pretrained and from-scratch ResNet-18 were not significantly different (McNemar p = 0.5044) and both scored below the CNN.
 > - Error analysis showed the 10 most frequent confusions (led by J→I with 29 errors, then H→A with 15) account for 125 of 311 remaining errors (40.2 %), and a manual audit of the 25 most-confident errors found 4 likely mislabels and 9 unreadable or decorative glyphs.
-> - Packaged a reproducible inference path (CLI *(and FastAPI service in Docker)*) with pytest coverage of data splits, metrics and preprocessing.
+> - Packaged a reproducible inference path (CLI and a FastAPI service in Docker) with pytest coverage of data splits, metrics and preprocessing.
 
-The "fewer parameters" claim is supported: 462,858 / 288,618 = 1.60×. Drop the italicised FastAPI/Docker text until Phase 2 is built.
+The "fewer parameters" claim is supported: 462,858 / 288,618 = 1.60×. The FastAPI/Docker items are built (Phase 2).

@@ -9,6 +9,15 @@ The scripts expect to be run from their own directory (they load files by relati
 the legacy TensorFlow environment (`env/`). `notMNIST.npz` now lives in `data/` at the repo root,
 so copy or symlink it next to the Part 1 scripts before running them.
 
+Legacy environment (not committed; versions read from `env/bin/python -m pip list`):
+
+```bash
+python3.13 -m venv env
+env/bin/pip install "tensorflow==2.20.*" scikit-learn numpy
+# installed here: Python 3.13.3, tensorflow 2.20.0, keras 3.12.0, numpy 2.3.4, scikit-learn 1.7.2
+env/bin/python legacy/evaluate_keras.py   # from the repo root; scores the .keras files on the PyTorch split
+```
+
 - `keras_part1/`: notMNIST letter classification (Part 1)
 - `nfl_draft_part2/`: NFL draft tabular model (Part 2, unrelated to computer vision)
 
