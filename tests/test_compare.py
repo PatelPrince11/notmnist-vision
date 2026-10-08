@@ -46,3 +46,8 @@ def test_build_rows_filters_sorts_and_nulls(tmp_path):
     md = render_markdown(rows, [{"a": "lo", "b": "hi", "b01": 3, "b10": 1, "p_value": 0.625}], 10, 20)
     assert "—" in md and "1,234,567" in md and "95.00%" in md and "[94.00–96.00]" in md
     assert "b01" in md and "0.625" in md
+
+
+def test_build_rows_missing_runs_dir(tmp_path):
+    with pytest.raises(FileNotFoundError, match="runs directory not found"):
+        build_rows(tmp_path / "nope")

@@ -7,6 +7,7 @@ from pathlib import Path
 import numpy as np
 
 from notmnist.data import make_splits
+from notmnist.utils import REPO_ROOT
 
 LADDER = [
     ("legacy_keras_mlp", "mlp_baseline_s42"),
@@ -37,8 +38,11 @@ def _is_smoke(name: str) -> bool:
 
 
 def build_rows(runs_dir: Path) -> list[dict]:
+    runs_dir = Path(runs_dir)
+    if not runs_dir.is_dir():
+        raise FileNotFoundError(f"runs directory not found: {runs_dir}")
     rows = []
-    for d in sorted(Path(runs_dir).iterdir()):
+    for d in sorted(runs_dir.iterdir()):
         if not d.is_dir() or _is_smoke(d.name) or not (d / "metrics.json").exists():
             continue
         m = json.loads((d / "metrics.json").read_text())
@@ -97,8 +101,7 @@ def render_markdown(rows: list[dict], pairs: list[dict], n_clean: int, n_officia
 
 
 def main() -> None:
-    root = Path(".")
-    runs_dir, out_dir = root / "runs", root / "reports"
+    runs_dir, out_dir = REPO_ROOT / "runs", REPO_ROOT / "reports"
     splits = make_splits(seed=42)
     mask = splits.test_clean_mask
     rows = build_rows(runs_dir)
