@@ -125,12 +125,20 @@ def _md_table(header, rows):
                      + ["| " + " | ".join(map(str, r)) + " |" for r in rows])
 
 
-def build_markdown(best, base, y, pb, pn, n, f1b, f1n, tab):
-    err = int((pb != y).sum())
-    pairs = [(L[t], L[p], c, f"{100 * c / err:.1f}%") for t, p, c in top_confusions(y, pb)]
-    fixed = int(((pn != y) & (pb == y)).sum())
-    intro = int(((pn == y) & (pb != y)).sum())
-    f1 = [(c, f"{f1n[c]['f1']:.3f}", f"{f1b[c]['f1']:.3f}", f"{f1n[c]['f1'] - f1b[c]['f1']:+.3f}") for c in L]
+def error_deltas(y, pred_base, pred_best) -> dict:
+    """fixed: baseline wrong & best right; introduced: baseline right & best wrong."""
+    y, pb, pn = np.asarray(y), np.asarray(pred_base), np.asarray(pred_best)
+    return {"fixed": int(((pb != y) & (pn == y)).sum()),
+            "introduced": int(((pb == y) & (pn != y)).sum()),
+            "n_err_base": int((pb != y).sum()), "n_err_best": int((pn != y).sum())}
+
+
+def build_markdown(best, base, y, pred_base, pred_best, n, f1_base, f1_best, tab):
+    d = error_deltas(y, pred_base, pred_best)
+    err = d["n_err_best"]
+    pairs = [(L[t], L[p], c, f"{100 * c / err:.1f}%") for t, p, c in top_confusions(y, pred_best)]
+    f1 = [(c, f"{f1_base[c]['f1']:.3f}", f"{f1_best[c]['f1']:.3f}",
+           f"{f1_best[c]['f1'] - f1_base[c]['f1']:+.3f}") for c in L]
     cw = [(r, *[f"{tab[r][i][0]} ({tab[r][i][1]:.2f})" for i in COURSEWORK_IDX]) for r in tab]
     return "\n\n".join([
         "# Error analysis",
@@ -138,10 +146,10 @@ def build_markdown(best, base, y, pb, pn, n, f1b, f1n, tab):
         f"## Top-10 confused pairs ({best})",
         _md_table(["true", "pred", "count", "% of errors"], pairs),
         f"## Per-class F1 ({base} vs {best})",
-        _md_table(["class", f"{base}", f"{best}", "delta (best - baseline)"], f1),
+        _md_table(["class", base, best, "delta (best - baseline)"], f1),
         "## Fixed / introduced errors",
-        f"Baseline `{base}` -> best `{best}`: fixed {fixed} (baseline wrong, best right), "
-        f"introduced {intro} (baseline right, best wrong).",
+        f"Baseline `{base}` -> best `{best}`: fixed {d['fixed']} (baseline wrong, best right), "
+        f"introduced {d['introduced']} (baseline right, best wrong).",
         "## Coursework indices (official test set)",
         _md_table(["run", *[f"idx {i}" for i in COURSEWORK_IDX]], cw),
         "## Figures",
@@ -180,7 +188,8 @@ def main():
 
     f1b = json.loads((dbase / "metrics.json").read_text())["test_clean"]["per_class"]
     f1n = json.loads((dbest / "metrics.json").read_text())["test_clean"]["per_class"]
-    md = build_markdown(best, base, y, pb, pn, len(y), f1b, f1n, tab)
+    md = build_markdown(best, base, y, pred_base=pb, pred_best=pn, n=len(y),
+                        f1_base=f1b, f1_best=f1n, tab=tab)
     (REPO_ROOT / "reports" / "error_analysis.md").write_text(md)
     print(f"wrote {REPO_ROOT / 'reports' / 'error_analysis.md'} (best={best}, baseline={base}, n={len(y)})")
 
